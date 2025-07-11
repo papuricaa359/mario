@@ -131,20 +131,19 @@
       }
     }
 
+    // 階段を積み上げるように修正（isBlockAt判定を外して積み重ね可能に）
     function spawnBlockStairs() {
       const steps = Math.floor(Math.random() * 5) + 3;
       const baseY = h - groundHeight - blockSize;
       for (let i = 0; i < steps; i++) {
         const bx = w + i * blockSize;
         const by = baseY - i * blockSize;
-        if (!isBlockAt(bx, by)) {
-          blocks.push({
-            x: bx,
-            y: by,
-            w: blockSize,
-            h: blockSize
-          });
-        }
+        blocks.push({
+          x: bx,
+          y: by,
+          w: blockSize,
+          h: blockSize
+        });
       }
     }
 
@@ -382,6 +381,18 @@
         }
       }
     });
+
+    // クリック・タップでもジャンプする処理を追加
+    function tryJump() {
+      if (player.onGround) {
+        player.dy = player.jump * player.jumpBoost;
+      }
+    }
+    window.addEventListener('click', tryJump);
+    window.addEventListener('touchstart', e => {
+      e.preventDefault(); // 画面スクロール防止
+      tryJump();
+    }, { passive: false });
 
     function gameOver() {
       isGameOver = true;
